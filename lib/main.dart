@@ -1,78 +1,116 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const GuguDanApp());
+  runApp(const MyApp());
 }
 
-class GuguDanApp extends StatelessWidget {
-  const GuguDanApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: '구구단 앱',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
       ),
-      home: GuguDanScreen(),
+      home: const MyHomePage(title: '우준이의 구구단!'),
     );
   }
 }
 
-class GuguDanScreen extends StatefulWidget {
-  const GuguDanScreen({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
 
   @override
-  _GuguDanScreenState createState() => _GuguDanScreenState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _GuguDanScreenState extends State<GuguDanScreen> {
-  int selectedNumber = 1;
+class _MyHomePageState extends State<MyHomePage> {
+  int _number = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('구구단 앱'),
+        title: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.white),
+        ),
+        elevation: 4,
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Center(
+      backgroundColor: Colors.grey[200],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DropdownButton<int>(
-              value: selectedNumber,
-              items: List.generate(9, (index) => index + 1)
-                  .map((number) => DropdownMenuItem<int>(
-                value: number,
-                child: Text('$number 단'),
-              ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedNumber = value!;
-                });
-              },
+          children: <Widget>[
+            const Text(
+              '몇 단을 할지 입력해주세요 :',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
-            Text(
-              '$selectedNumber 단',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(color: Colors.deepPurple, width: 2.0),
               ),
-            ),
-            const SizedBox(height: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                9,
-                    (index) => Text(
-                  '$selectedNumber x ${index + 1} = ${selectedNumber * (index + 1)}',
-                  style: const TextStyle(fontSize: 18),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      _number = int.tryParse(value) ?? 1;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    hintText: '숫자를 입력하세요',
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: SingleChildScrollView(
+                child: MultiplicationTable(number: _number),
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MultiplicationTable extends StatelessWidget {
+  final int number;
+
+  const MultiplicationTable({Key? key, required this.number}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+        9,
+        (index) => Container(
+          decoration: BoxDecoration(
+            color: index % 2 == 0 ? Colors.white : Colors.grey[100],
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          margin: EdgeInsets.symmetric(vertical: 4.0),
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            '${number} x ${index + 1} = ${number * (index + 1)}',
+            style: TextStyle(fontSize: 18),
+          ),
         ),
       ),
     );
